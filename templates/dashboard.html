@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Model Monitoring Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .plot { margin-bottom: 30px; }
+        .metrics { margin-bottom: 20px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Model Monitoring Dashboard</h1>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% else %}
+        
+        <div class="metrics">
+            <h2>Latest Performance Metrics</h2>
+            {% if latest_metrics %}
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                {% for metric, value in latest_metrics.items() %}
+                <tr>
+                    <td>{{ metric }}</td>
+                    <td>{{ "%.3f"|format(value) }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>No performance metrics available</p>
+            {% endif %}
+        </div>
+        
+        <div class="metrics">
+            <h2>Drift Summary</h2>
+            {% if drift_summary %}
+            <p>Total Features: {{ drift_summary.total_features }}</p>
+            <p>Drifted Features: {{ drift_summary.drifted_features|length }}</p>
+            {% if drift_summary.drifted_features %}
+            <h3>Drifted Features:</h3>
+            <ul>
+                {% for feature in drift_summary.drifted_features %}
+                <li>{{ feature }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% else %}
+            <p>No drift information available</p>
+            {% endif %}
+        </div>
+        
+        <div class="plot">
+            <h2>Performance Metrics Over Time</h2>
+            {{ performance_plot|safe }}
+        </div>
+        
+        <div class="plot">
+            <h2>Data Drift Over Time</h2>
+            {{ drift_plot|safe }}
+        </div>
+        
+        {% endif %}
+    </div>
+</body>
+</html>
+            
